@@ -33,16 +33,19 @@ app.c.init=function(){
 };
 
 app.c.getWeatherData=function(){
+  url="http://api.wunderground.com/api/";
+  url+=app.m.wundergroundKey+"/";
+  url+="hourly/q/";
+  //url+="geolookup/conditions/q/";
+  url+=app.m.stateDigraph+"/"+app.m.city+".json";
   
   $.ajax({
-  url : "http://api.wunderground.com/api/"+app.m.wundergroundKey+"/geolookup/conditions/q/"+app.m.stateDigraph+"/"+app.m.city+".json",
-  dataType : "jsonp",
-  success : function(parsed_json) {
-  GLOBALWEATHERDATA=parsed_json;
-  var location = parsed_json['location']['city'];
-  var temp_f = parsed_json['current_observation']['temp_f'];
-  alert("Current temperature in " + location + " is: " + temp_f);
-  }
+    url:url,
+    dataType : "jsonp",
+    success : function(parsed_json) {
+      //fix later - just for testing
+      GLOBALWEATHERDATA=parsed_json;
+      }
   });
   
 }
