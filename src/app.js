@@ -17,9 +17,12 @@ app.t={};
 app.m.bounds=false;
 app.m.paper=false;
 app.m.dateOffset=0;
+app.m.wundergroundKey="b94e6eee03d555d6";
+app.m.stateDigraph="CA";
+app.m.city="San_Francisco";
 app.m.globalAnimationLock=false;
 app.m.selectedDate=new Date();
-app.m.appName="Mandala Time";
+app.m.appName="Overcast";
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////begin controllers
@@ -28,6 +31,21 @@ app.c.init=function(){
   app.v.init();  
   app.v.listeners();
 };
+
+app.c.getWeatherData=function(){
+  
+  $.ajax({
+  url : "http://api.wunderground.com/api/"+app.m.wundergroundKey+"/geolookup/conditions/q/"+app.m.stateDigraph+"/"+app.m.city+".json",
+  dataType : "jsonp",
+  success : function(parsed_json) {
+  GLOBALWEATHERDATA=parsed_json;
+  var location = parsed_json['location']['city'];
+  var temp_f = parsed_json['current_observation']['temp_f'];
+  alert("Current temperature in " + location + " is: " + temp_f);
+  }
+  });
+  
+}
 
 ///////////////////////////////////////////////////////end controllers
 ///////////////////////////////////////////////////////begin views
@@ -64,7 +82,7 @@ app.v.initBounds=function(){
 app.v.initialReveal=function(){
 };
 
-app.v.drawMandala=function(date){
+app.v.drawGraph=function(date){
   var d=date||app.m.selectedDate;
   var chnc = new Chance(d.toDateString() );
   //var chnc=new Chance();
@@ -152,9 +170,9 @@ app.v.initPaper=function(){
   var canvas = document.getElementById('paper');
   //var chnc = new Chance();
 	paper.setup(canvas);
-	app.v.drawMandala();
+	app.v.drawGraph();
 	paper.view.onResize=function(event){
-	  app.v.drawMandala();
+	  app.v.drawGraph();
 	  paper.view.draw();
 	};
 	var mc=new Hammer(document.getElementById('paper'));
@@ -177,7 +195,7 @@ app.v.listeners=function(){
     app.m.selectedDate=moment()
       .add(app.m.dateOffset,'d')
       .toDate();
-    app.v.drawMandala(app.m.selectedDate);
+    app.v.drawGraph(app.m.selectedDate);
     
     $("div#dateDisplay").html(moment(app.m.selectedDate).format("dddd, MMMM Do YYYY"));
   };
@@ -191,18 +209,6 @@ app.v.listeners=function(){
   });
 
 
-  //replace this with the swipe listeners;
-  /*
-  $("body").on("click",function(event){
-    if (event.pageX>paper.view.bounds.centerX){
-      $("body").trigger("nextDay");
-    }else{
-      $("body").trigger("previousDay");
-    }
-  });
-  */
-  //keydowns
-  
   $("body").keydown(function(){
     var key=event.which;
     //console.log(key);
@@ -223,8 +229,7 @@ app.t.layout=function(){
   var d="";
   d+="<canvas id='paper' data-paper-resize='true' data-paper-keepalive='true'></canvas>";
   d+="<div id='dateDisplay'>"+moment(app.m.selectedDate).format("dddd, MMMM Do YYYY")+"</div>";
-  //d+="<div id='previousDay'>See the Previous Day's Mandala Clock</div>";
-  //d+="<div id='nextDay'>See the Next Day's Mandala Clock</div>";
+
   return d;
 };
 
