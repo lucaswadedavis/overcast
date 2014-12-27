@@ -83,6 +83,7 @@ app.v.initBounds=function(){
 
 
 app.v.initialReveal=function(){
+  app.v.drawGraph();
 };
 
 app.v.drawGraph=function(date){
@@ -92,6 +93,14 @@ app.v.drawGraph=function(date){
   paper.project.clear();
   var strokeWidth=1;
   var strokeColor="#fff";
+  
+  var avg=function(){
+    for (var i=0, sum=0;i<arguments.length;i++){
+      sum+=arguments[i];
+    }
+    return sum/arguments.length;
+  };
+  
 	var circle=function(x,y,r){
 		var path = new paper.Path.Circle({
     	//center: paper.view.center,
@@ -131,41 +140,67 @@ app.v.drawGraph=function(date){
     return p;
 	};
 
-  var orbits=24;
-  var r=0;
-  var planets=60;
-  var theta_interval=360/planets;
-  var interval=(Math.min(paper.view.bounds.width,paper.view.bounds.height)-60)/(2*24);
-  for (var i=0;i<orbits;i++){
-    r+=interval;
-    //var planetRadius=chnc.integer({min:2,max:30});
-    var planetRadius=chnc.integer({min:Math.max(1,interval/10),max:Math.max(1,interval*2)});
-    var w1=chnc.integer({min:Math.max(1,interval/10),max:Math.max(1,interval/2)});
-    var ringType=chnc.pick(["petal","petal","circle","diamond"]);
-    for (var j=0;j<planets;j++){
-      var theta=j*theta_interval;
-      var position=geo.getPoint(paper.view.bounds.centerX,paper.view.bounds.centerY,r,theta);
-      if (ringType=="circle"){
-        circle(position.x2,position.y2,planetRadius);   
-      }else if (ringType=="diamond"){
-        diamond(
-          paper.view.bounds.centerX+r,
-          paper.view.bounds.centerY,
-          planetRadius,
-          w1
-          ).rotate(theta,paper.view.center);
-        
-      }else{
-        petal(
-          paper.view.bounds.centerX+r,
-          paper.view.bounds.centerY,
-          planetRadius,
-          w1
-          ).rotate(theta,paper.view.center);
-      }            
-    }
-  }
+  var spiro=function(startingPoint,endingPoint,opts){
+    var b=paper.view.bounds;
+    var p=new paper.Path();
+    p.strokeColor="#ffffff";
+    var startingPoint=startingPoint || [b.left,b.centerY];
+    var endingPoint=endingPoint || [b.centerX,b.centerY];
+    var opts=opts||{};
+    opts.anchors=[];
+    opts.anchors.push(
+      [
+        avg(startingPoint[0],endingPoint[0] ),
+        avg(startingPoint[1],endingPoint[1] )
+      ]
+    );
 
+    //bezier curves, i'll start with one, but i'm going to use paper's smooth()
+    //get a useful fraction of the full path;
+    var quantum=Math.abs(startingPoint[0]-endingPoint[0])/3;
+    //start with a starting point
+    p.add(new paper.Point(startingPoint[0],startingPoint[1]) );
+    //curve up toward the anchor
+    p.add(new paper.Point(startingPoint[0]+(quantum*2) , startingPoint[1]-(quantum) ) );
+    
+    //curve beyond the ending point
+    p.add(new paper.Point(endingPoint[0]+quantum , endingPoint[1] ) );
+    
+    //curve opposite the initial curve
+    p.add(new paper.Point(endingPoint[0], endingPoint[1]+quantum ) );
+    //curve back towared the ending point
+    p.add(new paper.Point(endingPoint[0],endingPoint[1]) );
+    
+    //p.fullySelected=true;
+    p.smooth();
+    
+    return p;
+  };
+
+  var line=function(){
+    var p=new paper.Path();
+    p.strokeColor=strokeColor;
+    p.strokeWidth=strokeWidth;
+    var b=paper.view.bounds;
+    p.add([b.left,b.centerY]);
+    p.add([b.right,b.centerY]);
+    
+    var hours=24;
+    var interval=(b.right-b.left)/(hours+1);
+    
+    for (var i=0;i<hours;i++){
+      var x=interval+(i*interval);
+      var y=b.centerY;
+      var r=2;
+      circle(x,y,r);
+    }
+    
+    return p;
+  };
+
+  line();
+  spiro();
+  
 	paper.view.draw();
 };
 
