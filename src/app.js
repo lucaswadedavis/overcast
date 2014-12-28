@@ -101,6 +101,12 @@ app.v.drawGraph=function(date){
     return sum/arguments.length;
   };
   
+  var dist=function(x1,y1,x2,y2){
+    var l1=Math.abs(x1-x2);
+    var l2=Math.abs(y1-y2);
+    return Math.sqrt((l1*l1)+(l2*l2));
+  };
+  
 	var circle=function(x,y,r){
 		var path = new paper.Path.Circle({
     	//center: paper.view.center,
@@ -146,17 +152,37 @@ app.v.drawGraph=function(date){
     p.strokeColor="#ffffff";
     var startingPoint=startingPoint || [b.left,b.centerY];
     var endingPoint=endingPoint || [b.centerX,b.centerY];
-    var opts=opts||{};
-    opts.anchors=[];
-    opts.anchors.push(
-      [
-        avg(startingPoint[0],endingPoint[0] ),
-        avg(startingPoint[1],endingPoint[1] )
-      ]
-    );
+    
+    
+    var point=function(x,y){
+      p.add(new paper.Point(x,y));
+      return p;
+    };
+  
+    
+    var x=startingPoint[0];
+    var y=startingPoint[1];
+    var theta=90;
+    var r=300;
+    //start with the starting point
+    point(x,y);
+    
+    //do a loopy thing, checking distance along the way and decreasing the radius
+    while(dist(x,y,endingPoint[0],endingPoint[1])>10){
+      theta-=6;
+      r-=5;
+      var coords=geo.getPoint(x,y,r,theta);
+      x=coords.x2;
+      y=coords.y2;
+      point(x,y);
+    }
+    
+    //end with the ending point
+    point(endingPoint[0],endingPoint[1]);
 
     //bezier curves, i'll start with one, but i'm going to use paper's smooth()
     //get a useful fraction of the full path;
+    /*
     var quantum=Math.abs(startingPoint[0]-endingPoint[0])/3;
     //start with a starting point
     p.add(new paper.Point(startingPoint[0],startingPoint[1]) );
@@ -170,6 +196,7 @@ app.v.drawGraph=function(date){
     p.add(new paper.Point(endingPoint[0], endingPoint[1]+quantum ) );
     //curve back towared the ending point
     p.add(new paper.Point(endingPoint[0],endingPoint[1]) );
+    */
     
     //p.fullySelected=true;
     p.smooth();
