@@ -20,6 +20,7 @@ app.m.dateOffset=0;
 app.m.wundergroundKey="b94e6eee03d555d6";
 app.m.stateDigraph="CA";
 app.m.city="San_Francisco";
+app.m.weatherData=false;
 app.m.globalAnimationLock=false;
 app.m.selectedDate=new Date();
 app.m.appName="Overcast";
@@ -28,6 +29,7 @@ app.m.appName="Overcast";
 ///////////////////////////////////////////////////////begin controllers
 
 app.c.init=function(){
+  app.c.getWeatherData();
   app.v.init();  
   app.v.listeners();
 };
@@ -44,11 +46,12 @@ app.c.getWeatherData=function(){
     dataType : "jsonp",
     success : function(parsed_json) {
       //fix later - just for testing
-      GLOBALWEATHERDATA=parsed_json;
+      app.m.weatherData=parsed_json;
+      app.v.drawGraph();
       }
   });
-  
-}
+
+};
 
 ///////////////////////////////////////////////////////end controllers
 ///////////////////////////////////////////////////////begin views
@@ -83,7 +86,8 @@ app.v.initBounds=function(){
 
 
 app.v.initialReveal=function(){
-  app.v.drawGraph();
+  //app.v.drawGraph();
+  
 };
 
 app.v.drawGraph=function(date){
@@ -93,6 +97,11 @@ app.v.drawGraph=function(date){
   paper.project.clear();
   var strokeWidth=1;
   var strokeColor="#fff";
+  
+  var conditions={
+    "partly cloudy":1,
+    "clear":0
+  };
   
   var avg=function(){
     for (var i=0, sum=0;i<arguments.length;i++){
@@ -166,12 +175,15 @@ app.v.drawGraph=function(date){
     var r=300;
     //start with the starting point
     point(x,y);
-    
+    debugger;
     //do a loopy thing, checking distance along the way and decreasing the radius
+    //this doesn't work...not sure why
     while(dist(x,y,endingPoint[0],endingPoint[1])>10){
-      theta-=6;
+      theta-=60;
       r-=5;
+      
       var coords=geo.getPoint(x,y,r,theta);
+      //console.log(coords);
       x=coords.x2;
       y=coords.y2;
       point(x,y);
@@ -199,7 +211,7 @@ app.v.drawGraph=function(date){
     */
     
     //p.fullySelected=true;
-    p.smooth();
+    //p.smooth();
     
     return p;
   };
@@ -214,19 +226,40 @@ app.v.drawGraph=function(date){
     
     var hours=24;
     var interval=(b.right-b.left)/(hours+1);
-    
+    var weather=app.m.weatherData.hourly_forecast;
     for (var i=0;i<hours;i++){
       var x=interval+(i*interval);
       var y=b.centerY;
       var r=2;
       circle(x,y,r);
+      if (weather){
+        if (weather[i].condition==="Partly Cloudy"){
+          circle(x,y,r+5);
+        } else{
+          circle(x,y,r+10);
+        }
+      }
     }
+    
+    //solar circle
+    
+    circle(b.centerX,b.centerY,400);
+    
     
     return p;
   };
 
+  
+
   line();
-  spiro();
+  //the spiro thing's just not a good idea
+  //spiro();
+  
+  //i need some method to remember the locations of the days... or do I?
+  
+  
+  
+  //add the weather data to the line
   
 	paper.view.draw();
 };
