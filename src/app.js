@@ -243,7 +243,7 @@ app.v.drawGraph=function(date){
     
     //solar circle
     
-    circle(b.centerX,b.centerY,400);
+    circle(b.centerX,b.centerY,600);
     
     
     return p;
