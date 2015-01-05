@@ -299,7 +299,9 @@ app.v.drawSolarCircle=function(){
   var sunset=app.m.solarData.sun_phase.sunset;
 
   var minutesToPixels=function(minutes){
-    var pixels=60* (paper.view.bounds.width/(25) );
+    var pixelsPerHour=(paper.view.bounds.width)/25;
+    var pixelsPerMinute=pixelsPerHour/60;
+    var pixels=minutes*pixelsPerMinute;
     return pixels;
   };
   
