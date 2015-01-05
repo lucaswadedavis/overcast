@@ -290,7 +290,8 @@ app.v.drawGraph=function(date){
 
 app.v.drawSolarCircle=function(){
   var b=paper.view.bounds;
-    
+  var strokeColor="#ffffff";
+  var strokeWidth=3;
 	var circle=function(x,y,r){
 		var path = new paper.Path.Circle({
     	//center: paper.view.center,
