@@ -292,7 +292,7 @@ app.v.drawSolarCircle=function(){
   var b=paper.view.bounds;
   var strokeColor="#ffffff";
   var strokeWidth=3;
-  
+  if (!app.m.solarData){return;}
   var sunrise=app.m.solarData.sun_phase.sunrise;
   var sunset=app.m.solarData.sun_phase.sunset;
   
