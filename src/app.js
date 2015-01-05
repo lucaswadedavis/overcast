@@ -303,7 +303,7 @@ app.v.drawSolarCircle=function(){
     return pixels;
   };
   
-  var minutesBetween(sunrise,sunset){
+  var minutesBetween=function(sunrise,sunset){
     var ss=(60*parseInt(sunset.hour,10) )+parseInt(sunset.minute,10);
     var sr=(60*parseInt(sunrise.hour,10) )+parseInt(sunrise.minute,10);
     return ss-sr;
