@@ -327,7 +327,7 @@ app.v.drawSolarCircle=function(){
 	var r=minutesToPixels(dayMinutes)/2;
 	
 	circle(x,y,r);
-  
+  debugger;
 };
 
 app.v.initPaper=function(){
