@@ -292,6 +292,23 @@ app.v.drawSolarCircle=function(){
   var b=paper.view.bounds;
   var strokeColor="#ffffff";
   var strokeWidth=3;
+  
+  var sunrise=app.m.solarData.sun_phase.sunrise;
+  var sunset=app.m.solarData.sun_phase.sunset;
+  
+  var dayMinutes=minutesBetween(sunrise,sunset);
+
+  var minutesToPixels=function(minutes){
+    var pixels=paper.view.bounds.width/(25*60);
+    return pixels;
+  };
+  
+  var minutesBetween(sunrise,sunset){
+    var ss=(60*parseInt(sunset.hour,10) )+parseInt(sunset.minute,10);
+    var sr=(60*parseInt(sunrise.hour,10) )+parseInt(sunrise.minute,10);
+    return ss-sr;
+  };
+  
 	var circle=function(x,y,r){
 		var path = new paper.Path.Circle({
     	//center: paper.view.center,
@@ -303,7 +320,11 @@ app.v.drawSolarCircle=function(){
 		  
 	};
 	
-	circle(b.centerX,b.centerY,100);
+	var x=b.centerX;
+	var y=b.centerY;
+	var r=minutesToPixels(dayMinutes)/2;
+	
+	circle(x,y,r);
   
 };
 
