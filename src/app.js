@@ -329,7 +329,6 @@ app.v.drawSolarCircle=function(){
 	var y=b.centerY;
 	
 	circle(x,y,r);
-  debugger;
 };
 
 app.v.initPaper=function(){
