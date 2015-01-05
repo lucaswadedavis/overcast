@@ -324,9 +324,9 @@ app.v.drawSolarCircle=function(){
 	  
   var dayMinutes=minutesBetween(sunrise,sunset);
 
-	var x=b.centerX;
-	var y=b.centerY;
 	var r=minutesToPixels(dayMinutes)/2;
+	var x=r+minutesToPixels(minutesBetween({hour:"0",minute:"0"},sunrise));
+	var y=b.centerY;
 	
 	circle(x,y,r);
   debugger;
