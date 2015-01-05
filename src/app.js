@@ -267,12 +267,7 @@ app.v.drawGraph=function(date){
     
     //solar circle
     
-<<<<<<< HEAD
-    circle(b.centerX,b.centerY,500);
-=======
     app.v.drawSolarCircle();
->>>>>>> gh-pages
-    
     
     return p;
   };
