@@ -293,10 +293,10 @@ app.v.drawSolarCircle=function(){
   var strokeColor="#ffffff";
   var strokeWidth=3;
   if (!app.m.solarData){return;}
+
+
   var sunrise=app.m.solarData.sun_phase.sunrise;
   var sunset=app.m.solarData.sun_phase.sunset;
-  
-  var dayMinutes=minutesBetween(sunrise,sunset);
 
   var minutesToPixels=function(minutes){
     var pixels=paper.view.bounds.width/(25*60);
@@ -319,7 +319,9 @@ app.v.drawSolarCircle=function(){
     });
 		  
 	};
-	
+	  
+  var dayMinutes=minutesBetween(sunrise,sunset);
+
 	var x=b.centerX;
 	var y=b.centerY;
 	var r=minutesToPixels(dayMinutes)/2;
