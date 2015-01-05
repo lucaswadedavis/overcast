@@ -21,6 +21,7 @@ app.m.wundergroundKey="b94e6eee03d555d6";
 app.m.stateDigraph="CA";
 app.m.city="San_Francisco";
 app.m.weatherData=false;
+app.m.solarData=false;
 app.m.globalAnimationLock=false;
 app.m.selectedDate=new Date();
 app.m.appName="Overcast";
@@ -30,12 +31,35 @@ app.m.appName="Overcast";
 
 app.c.init=function(){
   app.c.getWeatherData();
+  app.c.getSolarData();
   app.v.init();  
   app.v.listeners();
 };
 
+
+app.c.getSolarData=function(){
+  var url="http://api.wunderground.com/api/";
+  url+=app.m.wundergroundKey+"/";
+  //url+="hourly/q/";
+  url+="astronomy/q/";
+  //url+="geolookup/conditions/q/";
+  url+=app.m.stateDigraph+"/"+app.m.city+".json";
+  
+  $.ajax({
+    url:url,
+    dataType : "jsonp",
+    success : function(parsed_json) {
+      //fix later - just for testing
+      app.m.solarData=parsed_json;
+      app.v.drawSolarCircle();
+      }
+  });
+
+};
+
+
 app.c.getWeatherData=function(){
-  url="http://api.wunderground.com/api/";
+  var url="http://api.wunderground.com/api/";
   url+=app.m.wundergroundKey+"/";
   url+="hourly/q/";
   //url+="geolookup/conditions/q/";
@@ -243,7 +267,11 @@ app.v.drawGraph=function(date){
     
     //solar circle
     
+<<<<<<< HEAD
     circle(b.centerX,b.centerY,500);
+=======
+    app.v.drawSolarCircle();
+>>>>>>> gh-pages
     
     
     return p;
@@ -262,6 +290,49 @@ app.v.drawGraph=function(date){
   //add the weather data to the line
   
 	paper.view.draw();
+};
+
+app.v.drawSolarCircle=function(){
+  var b=paper.view.bounds;
+  var strokeColor="#ffffff";
+  var strokeWidth=3;
+  if (!app.m.solarData){return;}
+
+
+  var sunrise=app.m.solarData.sun_phase.sunrise;
+  var sunset=app.m.solarData.sun_phase.sunset;
+
+  var minutesToPixels=function(minutes){
+    var pixelsPerHour=(paper.view.bounds.width)/25;
+    var pixelsPerMinute=pixelsPerHour/60;
+    var pixels=minutes*pixelsPerMinute;
+    return pixels;
+  };
+  
+  var minutesBetween=function(sunrise,sunset){
+    var ss=(60*parseInt(sunset.hour,10) )+parseInt(sunset.minute,10);
+    var sr=(60*parseInt(sunrise.hour,10) )+parseInt(sunrise.minute,10);
+    return ss-sr;
+  };
+  
+	var circle=function(x,y,r){
+		var path = new paper.Path.Circle({
+    	//center: paper.view.center,
+    	center:[x,y],
+    	radius: r,
+    	strokeColor:strokeColor,
+    	strokeWidth:strokeWidth
+    });
+		  
+	};
+	  
+  var dayMinutes=minutesBetween(sunrise,sunset);
+
+	var r=minutesToPixels(dayMinutes)/2;
+	var x=r+minutesToPixels(minutesBetween({hour:"0",minute:"0"},sunrise));
+	var y=b.centerY;
+	
+	circle(x,y,r);
 };
 
 app.v.initPaper=function(){
