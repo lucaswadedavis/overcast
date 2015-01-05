@@ -31,6 +31,7 @@ app.m.appName="Overcast";
 
 app.c.init=function(){
   app.c.getWeatherData();
+  app.c.getSolarData();
   app.v.init();  
   app.v.listeners();
 };
@@ -50,7 +51,7 @@ app.c.getSolarData=function(){
     success : function(parsed_json) {
       //fix later - just for testing
       app.m.solarData=parsed_json;
-      //app.v.drawGraph();
+      app.v.drawSolarCircle();
       }
   });
 
@@ -266,7 +267,7 @@ app.v.drawGraph=function(date){
     
     //solar circle
     
-    circle(b.centerX,b.centerY,600);
+    app.v.drawSolarCircle();
     
     
     return p;
@@ -285,6 +286,24 @@ app.v.drawGraph=function(date){
   //add the weather data to the line
   
 	paper.view.draw();
+};
+
+app.v.drawSolarCircle=function(){
+  var b=paper.view.bounds;
+    
+	var circle=function(x,y,r){
+		var path = new paper.Path.Circle({
+    	//center: paper.view.center,
+    	center:[x,y],
+    	radius: r,
+    	strokeColor:strokeColor,
+    	strokeWidth:strokeWidth
+    });
+		  
+	};
+	
+	circle(b.centerX,b.centerY,100);
+  
 };
 
 app.v.initPaper=function(){
