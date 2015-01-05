@@ -21,6 +21,7 @@ app.m.wundergroundKey="b94e6eee03d555d6";
 app.m.stateDigraph="CA";
 app.m.city="San_Francisco";
 app.m.weatherData=false;
+app.m.solarData=false;
 app.m.globalAnimationLock=false;
 app.m.selectedDate=new Date();
 app.m.appName="Overcast";
@@ -34,8 +35,30 @@ app.c.init=function(){
   app.v.listeners();
 };
 
+
+app.c.getSolarData=function(){
+  var url="http://api.wunderground.com/api/";
+  url+=app.m.wundergroundKey+"/";
+  //url+="hourly/q/";
+  url+="astronomy/q/";
+  //url+="geolookup/conditions/q/";
+  url+=app.m.stateDigraph+"/"+app.m.city+".json";
+  
+  $.ajax({
+    url:url,
+    dataType : "jsonp",
+    success : function(parsed_json) {
+      //fix later - just for testing
+      app.m.solarData=parsed_json;
+      //app.v.drawGraph();
+      }
+  });
+
+};
+
+
 app.c.getWeatherData=function(){
-  url="http://api.wunderground.com/api/";
+  var url="http://api.wunderground.com/api/";
   url+=app.m.wundergroundKey+"/";
   url+="hourly/q/";
   //url+="geolookup/conditions/q/";
